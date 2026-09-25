@@ -64,7 +64,6 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
       - When I guess a number that is <i>higher</i> than the secret number to find in the game, the hints say to "Go LOWER!". 
       - When I guess a number that is <i>lower</i> than the secret number to find in the game, the hints say to "Go HIGHER!".
 
-    **7. The "New Game" button does not start a new game. It is non-functional. Nothing appears to reset**
   
   <br/>
 <div>
@@ -80,8 +79,8 @@ Document at least 3 bugs you found. Add rows as needed.
 
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
+|Difficulty = Normal, secret = 76 (from Developer Debug Info). Submit a guess of 20| 20 < 76, so the app should report **Too Low** and give a hint of *Go LOWER* | App reports **Too High** and it gives a hint of  *Go HIGHER*  | No traceback — a TypeError: '>' not supported between instances of 'int' and 'str' is raised and silently swallowed by the except TypeError fallback. [[2]](#2). Also [look at failed test case](#3) |
+|Set difficulty to Normal |Range is 1, 50 | Range is 1, 100|[Look at failed test case](#4) |
 | | | | |
 
 ---
@@ -122,3 +121,30 @@ Document at least 3 bugs you found. Add rows as needed.
   - I asked it to improve my document by making it easier to read and understand. Initially it remade the reflection.md file but, I rejected much of the content it generated as I wanted to better document applications myself and use AI ethically.
   - It explained the **main panel** succintly
   - I learned more on writting descriptions succintly.
+
+<a id="2">[2]</a>: Anthropic. Claude Pro. https://claude.ai. 
+  - I asked Claude to find a bug and fufill the documentation noting it in the reflection.md file.
+    - I previous found the error it documented when I was playing with the application when it was running on a browser. It said to submit two guess to find the error. Two guesses were not needed. The results and hints came after submitted the first guess I so I modified it. <a href="ai_interactions.md">See ai_interactions.md</a>.
+
+stating it needs only one guess and documented the same error but with different inputs
+testing the application in the browser.
+  - It completed a row in th Bug Reproduction Log that provided information on a bug it found. The bug it found was the backward hints. 
+  - It guided me on how to report bugs for this project and
+  how to make tables in .md files.
+
+<a id="3">[3]</a>:
+```bash
+FAILED tests/test_game_logic.py::test_guess_too_high - AssertionError: assert '📈 Go HIGHER!' == '📉 Go LOWER!'
+FAILED tests/test_game_logic.py::test_guess_too_low - AssertionError: assert '📉 Go LOWER!' == '📈 Go HIGHER!'
+```
+<a id="4">[4]</a>:
+```bash
+    def test_get_range_for_difficulty_normal():
+      # On normal difficulty, the range should be from 1 to 50
+        range = get_range_for_difficulty("Normal")
+        assert range == (1, 50)
+        assert (1, 100) == (1, 50) 
+
+        At index 1 diff: 100 != 50
+        Use -v to get more diff
+```
