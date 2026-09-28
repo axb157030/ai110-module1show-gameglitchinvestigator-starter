@@ -84,6 +84,7 @@ Document at least 3 bugs you found. Add rows as needed.
 |Set difficulty to Hard |Range is 1, 100 | Range is 1, 50|[Look at failed test case](#5) |
 |The input is Easy, Normal and Hard.When difficulty is Easy, Normal| The **Secret** always has a range from 1 to 100 despite the difficulty set. When difficulty is Easy, Normal, Hard secret should be in range from 1 to 30, 50, and 100 respectively. Regardless whether user just started the application or clicked new game | Secret is always between 1 to 100. It can be greater than 20 and 50 regardless of the difficulty chosen. The default difficulty when setting the secret is always "Normal".|[Look at the error](#6) |
 | Guess 40, secret is 50, and user clicks submit button |The history list in the UI is not showing the guess upon submit. | The history list should show the guess | The history of the guesses has some laging. The user submits a guess and their guess is not showing in the history list in the UI unless they submit it again. |
+| Guess 40 and it is the first guess, secret is 50, and user clicks submit button |The **score** should update immediately with a score of -5. the guess | The score is showing as 0, The score field in the UI is not showing any updated score.| The score is not updated immediately upon the submitted Also [See picture](#3)|
 | The difficulty selected to Easy | The **main panel** should show "Guess a number between 1 and 20." |It shows "Guess a number between 1 and 100. "| The **main panel** always shows "Guess a number between 1 and 100." regardless of difficulty. It should represent the range of the secrets based on the difficulty user selected [See picture](#7).|
 ---
 
@@ -153,6 +154,9 @@ Move the history display below the submit handler (or render it in a placeholder
 FAILED tests/test_game_logic.py::test_guess_too_high - AssertionError: assert '📈 Go HIGHER!' == '📉 Go LOWER!'
 FAILED tests/test_game_logic.py::test_guess_too_low - AssertionError: assert '📉 Go LOWER!' == '📈 Go HIGHER!'
 ```
+<div>
+<img src="./assets/backward_hints.png" style="width 16rem; height: 15rem;">
+</div>
 <a id="4">[4]</a>:
 ```bash
     def test_get_range_for_difficulty_normal():

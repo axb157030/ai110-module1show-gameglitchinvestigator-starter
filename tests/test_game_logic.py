@@ -101,4 +101,16 @@ def test_update_score_with_easy_values_to_check_whether_it_returns_an_integer():
     print("^^^^",type(score))
     assert int == type(score)
 
-# New button not working
+
+
+def test_update_score_with_score_below_secret():
+    # Testing wheher update_score with easy values such as 0,"Too High", and 8
+    # Should returns an integer
+    score = update_score(0, "Too High", 8)
+    assert 5 == score
+
+def test_update_score_with_score_higher_than_secret():
+    # Testing wheher update_score with easy values such as 0,"Too High", and 8
+    # Should returns an integer
+    score = update_score(0, "Too Low", 8)
+    assert -5 == score
