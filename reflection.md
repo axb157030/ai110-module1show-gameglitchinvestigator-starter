@@ -82,9 +82,9 @@ Document at least 3 bugs you found. Add rows as needed.
 |Difficulty = Normal, secret = 76 (from Developer Debug Info). Submit a guess of 20| 20 < 76, so the app should report **Too Low** and give a hint of *Go LOWER* | App reports **Too High** and it gives a hint of  *Go HIGHER*  | No traceback — a TypeError: '>' not supported between instances of 'int' and 'str' is raised and silently swallowed by the except TypeError fallback. [[2]](#2). Also [look at failed test case](#3) |
 |Set difficulty to Normal |Range is 1, 50 | Range is 1, 100|[Look at failed test case](#4) |
 |Set difficulty to Hard |Range is 1, 100 | Range is 1, 50|[Look at failed test case](#5) |
-|The input is Easy, Normal and Hard.When difficulty is Easy, Normal| The **Secret** always has a range from 1 to 100 despite the difficulty set. When difficulty is Easy, Normal, Hard secret should be in range from 1 to 30, 50, and 100 respectively. Regardless whether user just started the application or clicked new game | Secret is always between 1 to 100. It can be greater than 20 and 50 regardless of the difficulty chosen. The default difficulty when setting the secret is always "Normal".|[Look at the error](#6) |
-| Guess 40, secret is 50, and user clicks submit button |The history list in the UI is not showing the guess upon submit. | The history list should show the guess | The history of the guesses has some laging. The user submits a guess and their guess is not showing in the history list in the UI unless they submit it again. |
-| Guess 40 and it is the first guess, secret is 50, and user clicks submit button |The **score** should update immediately with a score of -5. the guess | The score is showing as 0, The score field in the UI is not showing any updated score.| The score is not updated immediately upon the submitted Also [See picture](#3)|
+|The input is Easy, Normal and Hard.When difficulty is Easy, Normal| The **Secret** always has a range from 1 to 100 despite the difficulty set. When difficulty is Easy, Normal, Hard secret should be in range from 1 to 30, 50, and 100 respectively. Regardless whether user just started the application or clicked new game | Secret is always between 1 to 100. It can be greater than 20 and 50 regardless of the difficulty chosen. The default difficulty when setting the secret is always "Normal".|[Look at the error. The picture and bug](#6) |
+| Guess 40 and it is the first guess, secret is 50, and user clicks submit button |The history list in the UI is not showing the guess upon submit. | The history list should show the guess | The history of the guesses has some laging. The user submits a guess and their guess is not showing in the history list in the UI unless they submit it again [See the picture of the UI](#6). |
+| Guess 40 and it is the first guess, and it is the first guess, secret is 50, and user clicks submit button |The **score** should update immediately with a score of -5. the guess | The score is showing as 0, The score field in the UI is not showing any updated score.| The score is not updated immediately upon the submitted. Also [See picture of the UI](#6)|
 | The difficulty selected to Easy | The **main panel** should show "Guess a number between 1 and 20." |It shows "Guess a number between 1 and 100. "| The **main panel** always shows "Guess a number between 1 and 100." regardless of difficulty. It should represent the range of the secrets based on the difficulty user selected [See picture](#7).|
 ---
 
@@ -154,10 +154,31 @@ Move the history display below the submit handler (or render it in a placeholder
 FAILED tests/test_game_logic.py::test_guess_too_high - AssertionError: assert '📈 Go HIGHER!' == '📉 Go LOWER!'
 FAILED tests/test_game_logic.py::test_guess_too_low - AssertionError: assert '📉 Go LOWER!' == '📈 Go HIGHER!'
 ```
+Suspected bugs for the inaccurate hints
+
+```bash
+    try:
+        if guess > secret:
+            return "Too High", "📈 Go HIGHER!"
+        else:
+            return "Too Low", "📉 Go LOWER!"
+    except TypeError:
+        g = str(guess)
+        if g == secret:
+            return "Win", "🎉 Correct!"
+        if g > secret:
+            return "Too High", "📈 Go HIGHER!"
+        return "Too Low", "📉 Go LOWER!"
+        # The return "Too High", "📈 Go HIGHER!" is the bug
+        # It should be return "Too High", "📉 Go LOWER"
+        # return "Too Low", "📈 Go HIGHER!"
+        # These bugs are in logic_utils.py file
+```
 <div>
 <img src="./assets/backward_hints.png" style="width 16rem; height: 15rem;">
 </div>
 <a id="4">[4]</a>:
+
 ```bash
     def test_get_range_for_difficulty_normal():
         # On normal difficulty, the range should be from 1 to 50
@@ -169,17 +190,47 @@ E         At index 1 diff: 100 != 50
 E         Use -v to get more diff
 ```
 
+Suspected bugs for inaccurate ranges for the selected difficulty, Normal
+
+```bash
+def get_range_for_difficulty(difficulty: str):
+    """Return (low, high) inclusive range for a given difficulty."""
+    if difficulty == "Easy":
+        return 1, 20
+    if difficulty == "Normal":
+        return 1, 100
+        ''' return statement immediately above, return 1, 100 is the bug. It should be, return 1, 50'''
+    if difficulty == "Hard":
+        return 1, 50
+    return 1, 100
+```
+
 <a id="5">[5]</a>:
+
 ```bash
     def test_get_range_for_difficulty_hard():
-        # On nhard difficulty, the range should be from 1 to 100
+        ''' On hard difficulty, the range should be from 1 to 100 '''
         range = get_range_for_difficulty("Hard")
 >       assert range == (1, 100)
 E       assert (1, 50) == (1, 100)
 E         
 E         At index 1 diff: 50 != 100
 E         Use -v to get more diff
+```
 
+Suspected bugs for inaccurate ranges for the selected difficulty, Hard
+
+```bash
+  def get_range_for_difficulty(difficulty: str):
+      """Return (low, high) inclusive range for a given difficulty."""
+      if difficulty == "Easy":
+          return 1, 20
+      if difficulty == "Normal":
+          return 1, 100
+      if difficulty == "Hard":
+          return 1, 50
+          ''' return statement immediately above, return 1, 50 is the bug. It should be, return 1, 100'''
+    return 1, 100
 ```
 <a id="6">[6]</a>:
 <br/>
@@ -188,10 +239,12 @@ E         Use -v to get more diff
 </div>
 <br/>
 
+Suspected bug for the secret being in a range outside of selected difficulty.
+
 ```bash
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
-    # The conditional is the suspected bug. This code is in app.py
+    ''' The conditional is the suspected bug. This code is in app.py '''
 ```
 <a id="7">[7]</a>:
 <br/>
