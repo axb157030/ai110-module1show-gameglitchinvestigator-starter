@@ -104,6 +104,8 @@ Move the history display below the submit handler (or render it in a placeholder
 ```
 - Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
 
+  - I asked it to improve my document by making it easier to read and understand. Initially it remade the reflection.md file but, I rejected much of the content it generated as I wanted to better document applications myself and use AI ethically.  Also importantly I wanted to keep the original structure of the reflection.md. I felt that it did not strictly abide by the stakeholder requirements because of that. 
+
 ---
 
 ## 3. Debugging and testing your fixes
@@ -117,7 +119,12 @@ Move the history display below the submit handler (or render it in a placeholder
     and modify the code to also show the secret in the tab bar, why the secret generated
     had no relation to what difficulty the user picked.
     - I also made unit tests using Pytest to find whether the hints that were backward telling users to guess higher when they made a guess that was hire than the secret, the secret number to guess. Her is a test I made with Pytest for this application, [hint test case](#3).
+
 - Did AI help you design or understand any tests? How?
+
+  - Yes it did. GitHub Copilot initially made the test_app.py file, but the content was replaced by Claude Pro and it taught me how to test streamlit files that make UI changes rather than base Python files by making test cases for app.py that did effect the UI. It taught me by providing examples.
+
+
 
 ---
 
@@ -131,15 +138,16 @@ Move the history display below the submit handler (or render it in a placeholder
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
   - This could be a testing habit, a prompting strategy, or a way you used Git.
+    - Asking AI agents to provide me examples on how to test applications or units of code I am really unfamiliar with 
+    and make test cases on my own from their using AI Agents as an assistant for making them from there. 
 - What is one thing you would do differently next time you work with AI on a coding task?
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+  - It is important to really know the application. When I asked GitHub Copilot to make test cases to find whether the history list updates and shows in the UI, it made a test case that did not test for it showing the updates in the UI.
 
 ## 6. Citations and Extra Notes
 
 <a id="1">[1]</a>: Anthropic. Claude Pro. https://claude.ai. 
-  - I asked it to improve my document by making it easier to read and understand. Initially it remade the reflection.md file but, I rejected much of the content it generated as I wanted to better document applications myself and use AI ethically.
-  - It explained the **main panel** succintly
-  - I learned more on writting descriptions succintly.
+  - I asked it to improve the reflection.md by making it easier to read and understand. 
 
 <a id="2">[2]</a>: Anthropic. Claude Pro. https://claude.ai. 
   - I asked Claude to find a bug and fufill the documentation noting it in the reflection.md file.

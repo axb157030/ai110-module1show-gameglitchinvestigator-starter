@@ -18,10 +18,9 @@
 <!-- Describe the goal you asked the agent to accomplish -->
 
 **What did the agent do?**
-[1.](#1). It regenerated the reflection.md file redoing its initial structure. I rejected that but decided to take some snippets of
-content it generated for the reflection.md file when making the actual reflection.md file.
+[1.](#1). It regenerated the reflection.md file redoing its initial structure. I rejected that but decided to take some snippets of content it generated for the reflection.md file when making the actual reflection.md file.
 
-[2.](#2).  It completed a row in th Bug Reproduction Log in the reflextion.md file that provided information on a bug it found. The bug it found
+[2.](#2).  It completed a row in the Bug Reproduction Log in the reflextion.md file that provided information on a bug it found. The bug it found
   was the backward hints.
 
 [3.](#3). It told me why the history list in the UI was not showing a user's guess upon the user immediately submitting it. It said it had to be afteer the submit handler in the app.py file.
