@@ -115,10 +115,10 @@ Move the history display below the submit handler (or render it in a placeholder
   - Also I made test cases with pytest, which had to pass as well.
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
-    - I tested if I were to take out a conditional [Look at the bug](#6) int the code
-    and modify the code to also show the secret in the tab bar, why the secret generated
-    had no relation to what difficulty the user picked.
-    - I also made unit tests using Pytest to find whether the hints that were backward telling users to guess higher when they made a guess that was hire than the secret, the secret number to guess. Her is a test I made with Pytest for this application, [hint test case](#3).
+    - There was an error, secrets were not in range of selected difficulty. I decided to test removing a conditional conditional [Look at the bug](#6) in the code
+    and modify the code to also show the secret in the tab bar, to find why why the secret generated had no relation to what difficulty the user picked. The secret was changing but no one could guess the secret as it would immediately change upon submission. So I asked GitHub Copilot. We stored the difficulty user selected in the streamlit session state where the one that was not in session state made a function to reset the values except for the difficulty and called that
+    whenever user clicked a new game or the difficulty user selected was different from the one stored in the streamlit session, the previous difficulty, the secret and the debug log would reset.
+    - I also tested it by seeing the results in the UI. After every difficulty level and new game, I selected, the secret shown in the UI immediately updated in both the backend service and its UI. Also these changes made the score and history update in time but also introduced a bug regarding the number of times a user can attempt to guess the number.
 
 - Did AI help you design or understand any tests? How?
 

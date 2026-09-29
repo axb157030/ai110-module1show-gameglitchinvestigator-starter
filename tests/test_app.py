@@ -1,6 +1,6 @@
 
 """
-Made by Claude Pro
+Made by Claude Pro and GitHub Copilot
 Tests for the "guess only appears after a second submit" bug in app.py.
 
 TESTS ONLY -- nothing here modifies app.py or logic_utils.py.
@@ -35,6 +35,7 @@ check a candidate fix without editing app.py itself.
 
 import json
 import os
+import random
 from pathlib import Path
 
 import pytest
@@ -165,3 +166,56 @@ def test_attempts_left_banner_reflects_the_submitted_guess(app):
     assert attempts_left_in_ui(app) == before - 1, (
         "the attempts banner renders above the submit handler, so it is stale"
     )
+
+
+def test_secret_stays_fixed_when_a_guess_is_submitted(app):
+    submit_guess(app, "40")
+
+    assert app.session_state["secret"] == SECRET
+
+
+def test_changing_difficulty_starts_a_new_game_with_a_stable_secret(app):
+    app.session_state["secret"] = 88
+    app.session_state["attempts"] = 3
+    app.session_state["score"] = 15
+    app.session_state["history"] = [40]
+
+    app.selectbox[0].select("Easy").run()
+
+    new_secret = app.session_state["secret"]
+    assert 1 <= new_secret <= 20
+    assert f"Secret: `{new_secret}`" in [item.value for item in app.markdown]
+    assert app.session_state["attempts"] == 0
+    assert app.session_state["score"] == 0
+    assert app.session_state["history"] == [40]
+    assert app.session_state["status"] == "playing"
+
+    app.checkbox[0].set_value(False).run()
+
+    assert app.session_state["secret"] == new_secret
+
+
+def test_new_game_uses_active_range_and_changes_secret(app, monkeypatch):
+    app.selectbox[0].select("Easy").run()
+    app.session_state["secret"] = 20
+    app.session_state["attempts"] = 4
+    app.session_state["score"] = 45
+    app.session_state["status"] = "won"
+    app.session_state["history"] = [10, 20]
+    monkeypatch.setattr(random, "randint", lambda low, high: high)
+
+    new_game_button = next(
+        button for button in app.button if button.label.startswith("New Game")
+    )
+    new_game_button.click().run()
+
+    assert app.session_state["secret"] == 1
+    assert app.session_state["secret"] != 20
+    assert "Secret: `1`" in [item.value for item in app.markdown]
+    assert app.session_state["attempts"] == 0
+    assert app.session_state["score"] == 0
+    assert app.session_state["history"] == [10, 20]
+    assert app.session_state["status"] == "playing"
+
+    # Users have one less attempt to guess number. When they are
+    # stated to have 8 attempts to guess the number, they only have 7.

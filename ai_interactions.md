@@ -44,7 +44,7 @@ testing the application in the browser.
 | Edge Case | Prompt Used | AI-Suggested Test | Did It Pass? | Your Reasoning |
 |-----------|-------------|-------------------|--------------|----------------|
 |History List not showing guess upon user submitting it |"Why do I have to submit the guess twice for the guesses to be record in history and shown in ui" |"Move the history display below the submit handler (or render it in a placeholder that you update after appending). The append itself is happening on the first submit. You can see the render and append order in app.py:47 and app.py:94." Also see test_submitted_guesses_appear_in_history_after_each_click() in test_app.py. | It passed. It showed that the history list is updating but it is not showing whether it is showing that in the UI upon user submitting the guess. Claude Pro replaced it after I essentially asked the same question it. I essentially asked Claude Pro to do the same task and it provided more test cases. |
-| | | | | |
+|Secret not changing based on difficulty nor new game |2 prompts. "When I remove if "secret" not in st.session_state: the secret changes upon dificulty but does not accept guesses that are submitted as it keeps changing" **AND** "the secret should change every new game and every time the difficulty like EASY NORMAL and HARD changes"|"test_changing_difficulty_starts_a_new_game_with_a_stable_secret" and "test_new_game_uses_active_range_and_changes_secret" |Yes it passed | The secrets were updating. The problem was they were not updating in the UI and had no relation to the difficulty selected when a new game was selected.|
 | | | | | |
 
 ---
