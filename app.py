@@ -6,6 +6,7 @@ import os;
 # GitHub Copilot and I did to restart the game and change secret
 # Every time user switches difficulty or starts a new game
 def start_new_game(low, high):
+    #Try this attempt_limit = attempt_limit_map[difficulty]
     secret = random.randint(low, high)
     st.session_state.attempts = 0
     st.session_state.secret = secret

@@ -115,14 +115,19 @@ Move the history display below the submit handler (or render it in a placeholder
   - Also I made test cases with pytest, which had to pass as well.
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
-    - There was an error, secrets were not in range of selected difficulty. I decided to test removing a conditional conditional [Look at the bug](#6) in the code
-    and modify the code to also show the secret in the tab bar, to find why why the secret generated had no relation to what difficulty the user picked. The secret was changing but no one could guess the secret as it would immediately change upon submission. So I asked GitHub Copilot. We stored the difficulty user selected in the streamlit session state where the one that was not in session state made a function to reset the values except for the difficulty and called that
-    whenever user clicked a new game or the difficulty user selected was different from the one stored in the streamlit session, the previous difficulty, the secret and the debug log would reset.
-    - I also tested it by seeing the results in the UI. After every difficulty level and new game, I selected, the secret shown in the UI immediately updated in both the backend service and its UI. Also these changes made the score and history update in time but also introduced a bug regarding the number of times a user can attempt to guess the number.
+    - There was an error, secrets were not in range of selected difficulty when I changed difficulties in the game from the UI. The secrets initially would not change at all unless the application was reloaded. I decided to test removing a conditional conditional [Look at the bug](#6) in the code
+    and modify the code to also show the secret in the tab bar, to find why the secret generated had no relation to what difficulty the user picked. The secret was changing but no one could guess the secret as it would immediately change upon submission. So I asked GitHub Copilot. We stored the difficulty user selected in the streamlit session state where the one that was not in session state made a function to reset the values except for the difficulty and called that whenever user clicked a new game or the difficulty user selected was different from the one stored in the streamlit session, the previous difficulty, the secret and the debug log would reset. 
+    - I tested those changes by checking the results in the UI upon my clicking a different difficulty and my clicking on new game with a different difficulty. After every difficulty level and new game, I selected, the secret shown in the UI immediately updated in both the backend service and its UI. **Also these changes made the score and history update in time ** but also introduced a bug regarding the number of times a user can attempt to guess the number.
+      - The bug it introduced allowed the user one less than the attempt limit shown in the sidebar of the UI and made the main panel show the attempt limit is one less than it. I uses this to test it using pytest. [Please see this for more details](#9)
+      made a fix through this ----------- and tested it in the UI by guessing the attempt limit number of times to find the secret and the game gave me those attempt_limit number of times to find the secret number to guess.
+
+    - I also tested it using pytest [[8]](#8).
+
+    - **Another Bug Fix**
 
 - Did AI help you design or understand any tests? How?
 
-  - Yes it did. GitHub Copilot initially made the test_app.py file, but the content was replaced by Claude Pro and it taught me how to test streamlit files that make UI changes rather than base Python files by making test cases for app.py that did effect the UI. It taught me by providing examples.
+  - Yes it did. GitHub Copilot initially made the test_app.py file, but the content was replaced by Claude Pro and it taught me how to test streamlit files that make UI changes rather than base Python files by making test cases for app.py that did effect the UI. It taught me by providing examples. Please see test_app.py
 
 
 
@@ -259,3 +264,30 @@ if "secret" not in st.session_state:
 <div>
 <img src="./assets/blue_block.png">
 </div>
+<a id="8">[8]</a>:
+
+Tests in test_app.py are suppose to test where secret changes based on difficulty or when user clicks a new game
+
+```bash
+test_changing_difficulty_starts_a_new_game_with_a_stable_secret
+
+test_new_game_uses_active_range_and_changes_secret
+```
+
+<a id="9">[9]</a>:
+
+Tests in test_app.py are suppose to test 
+that number of attempts user has tried is shown as 0
+in the UI upon first starting the game.
+
+```bash
+test_attempts_left_banner_reflects_the_submitted_guess
+```
+
+Suspected bug. 
+
+```bash
+if "attempts" not in st.session_state:
+    st.session_state.attempts = 1
+    # Should be st.session_state.attempts = 0
+```
