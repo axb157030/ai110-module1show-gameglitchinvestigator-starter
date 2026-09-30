@@ -116,14 +116,16 @@ Move the history display below the submit handler (or render it in a placeholder
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
     - There was an error, secrets were not in range of selected difficulty when I changed difficulties in the game from the UI. The secrets initially would not change at all unless the application was reloaded. I decided to test removing a conditional conditional [Look at the bug](#6) in the code
-    and modify the code to also show the secret in the tab bar, to find why the secret generated had no relation to what difficulty the user picked. The secret was changing but no one could guess the secret as it would immediately change upon submission. So I asked GitHub Copilot. We stored the difficulty user selected in the streamlit session state where the one that was not in session state made a function to reset the values except for the difficulty and called that whenever user clicked a new game or the difficulty user selected was different from the one stored in the streamlit session, the previous difficulty, the secret and the debug log would reset. 
-    - I tested those changes by checking the results in the UI upon my clicking a different difficulty and my clicking on new game with a different difficulty. After every difficulty level and new game, I selected, the secret shown in the UI immediately updated in both the backend service and its UI. **Also these changes made the score and history update in time ** but also introduced a bug regarding the number of times a user can attempt to guess the number.
-      - The bug it introduced allowed the user one less than the attempt limit shown in the sidebar of the UI and made the main panel show the attempt limit is one less than it. I uses this to test it using pytest. [Please see this for more details](#9)
-      made a fix through this ----------- and tested it in the UI by guessing the attempt limit number of times to find the secret and the game gave me those attempt_limit number of times to find the secret number to guess.
+    and modify the code to also show the secret in the tab bar, to find why the secret generated had no relation to what difficulty the user picked. The secret was changing but no one could guess the secret as it would immediately change upon submission. So I asked GitHub Copilot. We stored the difficulty user selected in the streamlit session state where the one that was not in session state made a function to reset the values except for the difficulty and called that whenever user clicked a new game or the difficulty user selected was different from the one stored in the streamlit session, the previous difficulty, the secret and the debug log would reset. Essentially we made a function called  `start_new_game(low, high)` to reset the debug data and moved down displaying the debug info in the apppy file making it just before `st.divider()`.
+    - I tested those changes by checking the results in the UI upon my clicking a different difficulty and my clicking on new game with a different difficulty. After every difficulty level and new game, I selected, the secret shown in the UI immediately updated in both the backend service and its UI. Also these changes made the score and history update in time, but also introduced a bug regarding the number of times a user can attempt to guess the number.
+      - **The bug it introduced** allowed the user one less than the attempt limit shown in the sidebar of the UI and made the main panel show the attempt limit is one less than it. I uses this to test it using pytest. [Please see this for more details](#9). I
+      made a fix through by changing the initial number of attempts from 1 to 0 and then  tested it in the UI by checking the attempt limit in both the side bar and main panel are the same and by using all the available guesses users can submit in a game to see whether the attempt limit provides the actual number of times a user can submit a guess to find the secret number.
 
-    - I also tested it using pytest [[8]](#8).
+    - I also tested for this secret changing issue by using pytest [[8]](#8).
 
-    - **Another Bug Fix**
+    - I ran tests with pytest to test that the score function that calculates the scores correctly calculates the score. The test case passed with no code changes [[10]](#10). 
+
+    - **Another Bug Fix** # Backward hints
 
 - Did AI help you design or understand any tests? How?
 
@@ -281,7 +283,7 @@ that number of attempts user has tried is shown as 0
 in the UI upon first starting the game.
 
 ```bash
-test_attempts_left_banner_reflects_the_submitted_guess
+test_attempts_left_banner_reflects_the_attempt_limit_shown_in_sidebar_and_num_of_attempts_in_debug_info_expander_starts_at_zero
 ```
 
 Suspected bug. 
@@ -289,5 +291,24 @@ Suspected bug.
 ```bash
 if "attempts" not in st.session_state:
     st.session_state.attempts = 1
-    # Should be st.session_state.attempts = 0
+    # Now is 
+    # st.session_state.attempts = 0
+```
+
+<a id="10">[10]</a>:
+
+In test_game_logic.py file, which tests the logic_utils.py file.
+
+```bash
+def test_update_score_with_score_below_secret():
+    # Testing wheher update_score with easy values such as 0,"Too High", and 8
+    # Should returns an integer
+    score = update_score(0, "Too High", 8)
+    assert 5 == score
+
+def test_update_score_with_score_higher_than_secret():
+    # Testing wheher update_score with easy values such as 0,"Too High", and 8
+    # Should returns an integer
+    score = update_score(0, "Too Low", 8)
+    assert -5 == score
 ```

@@ -43,9 +43,10 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high) 
 
 if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
+    st.session_state.attempts = 0
 
 if "score" not in st.session_state:
+    # st.session_state.score = 1 this was changed to 0 to fix bug over incoherent attempt limit and current number of attempts user made to find secret number in the given in the debug expander
     st.session_state.score = 0
 
 if "status" not in st.session_state:
@@ -145,9 +146,9 @@ with attempts_display.container():
         f"Attempts left: {attempt_limit - st.session_state.attempts}"
     )
 # Must be after submit handler so that it gets the data upon submitted
-# not before it was submitted.
+# not before it was submitted. History list, score, and secrets in the Debug info Expander update on time
 # Made by GitHub Copilot.
-#According to GitHub Copilot regarding this:
+# According to GitHub Copilot regarding this:
     # Because Streamlit runs the script top to bottom. 
     # If the banner and debug panel render before the submit 
     # handler, they read the old attempts and history. 

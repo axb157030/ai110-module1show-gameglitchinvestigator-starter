@@ -54,6 +54,7 @@ def app():
     """A freshly started app with a fixed secret, so no guess wins by luck."""
     at = AppTest.from_file(str(APP_FILE)).run()
     at.session_state["secret"] = SECRET
+    # print(at._tree) 
     return at
 '''From Claude Pro after asking it 
 was doesnt app.markdown list all the ui how do you 
@@ -176,15 +177,18 @@ def test_history_stays_visible_on_a_non_submit_interaction(app):
 
 
 # I later greatly modified it
-def test_attempts_left_banner_reflects_the_submitted_guess(app):
-    #print(at._tree) 
-    #print(f"------ {[info for info in app.info]}")
+def test_attempts_left_banner_reflects_the_attempt_limit_shown_in_sidebar_and_num_of_attempts_in_debug_info_expander_starts_at_zero(app):
     attempt_limit = attempts_left_in_ui(app)
-    #print("------ attempt_limit " + str(attempt_limit))
+    attempt_limit_from_sidebar = app.sidebar.caption[1].value.split(':')[1].strip()
+    print(f"attempt_limit_from_sidebar {attempt_limit_from_sidebar}")
+    print(f"attempt_limit {attempt_limit}")
+    assert str(attempt_limit) == attempt_limit_from_sidebar, ("Attempt limit shown should " +
+    "be same in the one shown in the sidebar where users " +
+    "can select difficulty and the one in the main panel in the blue block")
     attempts = 0 # Number of attempts user guessed the secret number
     for attempt_num in range(attempt_limit):
         assert app.session_state.attempts == attempts, (
-            "Attempts left at end should be 0 and number number of attempts should start at 0"
+            "Attempts left at end should be 0 and number number of attempts should start at 0" 
     )
         submit_guess(app, "40")
         attempts +=1
@@ -280,7 +284,7 @@ def test_new_game_draws_a_real_random_secret_in_easy_range(app):
         f"the secret was {secrets[0]} in all {DRAWS} draws -- it is not being redrawn"
     )
 
-#Made by Claude Pro when I asked it how to extract from the sidebar in the app to test whether the attempts left and number of attempts the app listed during the first game when application restartsn is accuratr
+# Made by Claude Pro when I asked it how to extract from the sidebar in the app to test whether the attempts left and number of attempts the app listed during the first game when application restartsn is accuratr
 def test_sidebar_shows_the_range_for_the_selected_difficulty(app):
     app.selectbox[0].select("Hard").run()
 
