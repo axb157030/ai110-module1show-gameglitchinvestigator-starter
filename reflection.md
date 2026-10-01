@@ -125,7 +125,13 @@ Move the history display below the submit handler (or render it in a placeholder
 
     - I ran tests with pytest to test that the score function that calculates the scores correctly calculates the score. The test case passed with no code changes [[10]](#10). 
 
-    - **Another Bug Fix** # Backward hints
+    - **Another Bug Fix** # Backward hints. I made the hints suggest users to guess higher when the guess is lower than the secret number to find and lower when the guess is higher than the secret number to define. The bug was in the method `check_guess`. It would return `Too High", "📈 Go HIGHER!` and `"Too Low", "📉 Go LOWER!"` I changed those return statements to return  `"Too High", "📉 Go LOWER!"` and `Too Low", "📈 Go HIGHER!"`. Also there was others bugs that was passing the secret as a string rather than an integer. I fixed that, [please see more here](#3) I manually tested in the UI and the hints were showing accurately.
+
+    - Also the blue block in the main panel was given an inaccurate range, It always gave
+    "Guess a number between 1 and 100." . [ Please see](#7). I changed that by adding replacing a line of code in app.py with 
+    `f"Guess a number between {low} and {high}. "
+`
+ 
 
 - Did AI help you design or understand any tests? How?
 
@@ -138,7 +144,7 @@ Move the history display below the submit handler (or render it in a placeholder
 ## 4. What did you learn about Streamlit and state?
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
-
+  - session state holds the values that the UI shows. They are like a list of variables that can hold many types of data in JavaScript. Streamlit "reruns" Rerender the UI to show the updated data of the session state.
 ---
 
 ## 5. Looking ahead: your developer habits
@@ -148,6 +154,7 @@ Move the history display below the submit handler (or render it in a placeholder
     - Asking AI agents to provide me examples on how to test applications or units of code I am really unfamiliar with 
     and make test cases on my own from their using AI Agents as an assistant for making them from there. 
 - What is one thing you would do differently next time you work with AI on a coding task?
+  - I would come up with acceptance criteria. I would brainstorm and write down what I want to be completed. Ask AI to assist me in brainstorming and coming up the acceptance criteria and the description describing the application design and function etc. I would come up with some classes of my own. Then I would ask the AI to build based on those classes, acceptace criteria and descriptions I provided. I would also ask AI to give detailed and simple explanations for them to ensure I understand them.
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
   - It is important to really know the application. When I asked GitHub Copilot to make test cases to find whether the history list updates and shows in the UI, it made a test case that did not test for it showing the updates in the UI.
 
@@ -171,7 +178,10 @@ FAILED tests/test_game_logic.py::test_guess_too_low - AssertionError: assert '�
 ```
 Suspected bugs for the inaccurate hints
 
+In logic_utils.py
+
 ```bash
+    
     try:
         if guess > secret:
             return "Too High", "📈 Go HIGHER!"
@@ -188,6 +198,59 @@ Suspected bugs for the inaccurate hints
         # It should be return "Too High", "📉 Go LOWER"
         # return "Too Low", "📈 Go HIGHER!"
         # These bugs are in logic_utils.py file
+```
+
+```bash
+    # The bug was that the guesses and secrets were # not parsed to integers. 
+      # '40' < 9  will return true
+      # '40' < '9'  will return true
+      # 40 < 9  will return false
+    # The bug fix applied.
+    if(type(guess) == str):
+            guess = guess.strip() if guess is not None else None
+            guess = int(guess) if guess and guess.isdigit() else guess
+
+    if(type(secret) == str):
+            secret = secret.strip() if secret is not None else None
+            secret = int(secret) if secret and secret.isdigit() else secret
+
+    if guess == secret:
+        return "Win", "🎉 Correct!"
+
+    try:
+        if guess > secret:
+            return "Too High", "📉 Go LOWER!"
+        else:
+            return "Too Low", "📈 Go HIGHER!"
+    except TypeError:
+        g = str(guess)
+        if g == secret:
+            return "Win", "🎉 Correct!"
+        if g > secret:
+            return "Too High", "📉 Go LOWER!"
+        return "Too Low", "📈 Go HIGHER!"
+```
+
+In app.py
+
+```bash
+        st.session_state.history.append(guess_int)
+        # I asked GitHub Copilot, it says: "In the current app.py:98-103, 
+        # st.session_state.secret is converted to a string on 
+        # every even-numbered attempt: making the hints inaccurate."
+        # secret = str(st.session_state.secret)
+        # After reading that from GitHub Copilot, I asked whether
+        # the if else statement that converts secret to a string upon
+        # even attemps should be deleted. It agreed
+        # BUG
+        #if st.session_state.attempts % 2 == 0:
+        #    secret = str(st.session_state.secret)
+        #else:
+        #    secret = st.session_state.secret
+        # BUG
+        
+        # BUG FIX
+        secret = st.session_state.secret
 ```
 <div>
 <img src="./assets/backward_hints.png" style="width 16rem; height: 15rem;">
@@ -265,6 +328,31 @@ if "secret" not in st.session_state:
 <br/>
 <div>
 <img src="./assets/blue_block.png">
+</div>
+
+```bash
+# Test case for testing that the blue block gives the accurate range. Of course blue block also gives attempts left. This test case is in test_app.py
+
+secret_range_in_main_panel_ui
+
+```
+
+Fix for this was replacing this line of code
+`f"Guess a number between 1 and 100.` with this line of code, `f"Guess a number between {low} and {high}. "` in app.py file.
+
+```bash
+with attempts_display.container():
+    st.info(
+        # Another bug. 
+        # f"Guess a number between 1 and 100. "
+        f"Guess a number between {low} and {high}. "
+        f"Attempts left: {attempt_limit - st.session_state.attempts}"
+    )
+```
+
+<br/>
+<div>
+<img src="./assets/blue_block_range_corrected.png">
 </div>
 <a id="8">[8]</a>:
 

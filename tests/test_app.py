@@ -101,6 +101,14 @@ def attempts_left_in_ui(at):
     text = at.info[0].value
     return int(text.rsplit("Attempts left:", 1)[1].strip().rstrip("."))
 
+def secret_range_in_main_panel_ui(at):
+    """The 'Secret range: N' number as rendered in the st.info banner."""
+    text = at.info[0].value
+    # Extract this "f"Guess a number between {low} and {high}. " from text
+    # Extract 1 and 100 from '1 and 100. Attempts left: 5'  
+    return text.rsplit("Guess a number between ", 1)[1].strip().rstrip(".").split(" and ")[0] + " to " + text.rsplit("Guess a number between ", 1)[1].strip().rstrip(".").split(" and ")[1].split(".")[0]
+
+
 
 # --- the data layer is fine: these pass even with the bug present ------------
 
@@ -291,3 +299,9 @@ def test_sidebar_shows_the_range_for_the_selected_difficulty(app):
 
     assert app.sidebar.caption[0].value == "Range: 1 to 100"
     assert app.sidebar.caption[1].value == "Attempts allowed: 5"
+
+
+def test_main_panel_shows_the_range_for_the_selected_difficulty(app):
+    app.selectbox[0].select("Hard").run()
+
+    assert secret_range_in_main_panel_ui(app) == "1 to 100"

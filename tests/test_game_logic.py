@@ -20,6 +20,19 @@ def test_guess_too_low():
     result, hint = check_guess(40, 50)
     assert result == "Too Low"
     assert hint == "📈 Go HIGHER!"
+
+
+def test_guess_too_high_with_string_guess():
+    # If secret is 50 and guess is 40, hint should be "Too Low"
+    result, hint = check_guess("60", 9)
+    assert result == "Too High"
+    assert hint == "📉 Go LOWER!"
+
+def test_guess_too_low_with_string_guess():
+    # If secret is 50 and guess is 40, hint should be "Too Low"
+    result, hint = check_guess("9", 40)
+    assert result == "Too Low"
+    assert hint == "📈 Go HIGHER!"
     
 
 def test_get_range_for_difficulty_easy():
@@ -39,7 +52,7 @@ def test_get_range_for_difficulty_normal():
 
 def test_get_range_for_difficulty_normal_and_case_sensitivity():
     # On normal difficulty regardless of casing, the range should be from 1 to 50
-    range = get_range_for_difficulty("NoMaL")
+    range = get_range_for_difficulty("NoRMaL")
     assert range == (1, 50)
 
 def test_get_range_for_difficulty_hard():
@@ -114,3 +127,5 @@ def test_update_score_with_score_higher_than_secret():
     # Should returns an integer
     score = update_score(0, "Too Low", 8)
     assert -5 == score
+
+

@@ -69,7 +69,7 @@ debug_info_display = st.empty()
 raw_guess = st.text_input(
     "Enter your guess:",
     key=f"guess_input_{difficulty}"
-)
+) 
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -81,6 +81,7 @@ with col3:
 
 if new_game:
     st.success("New game started.")
+    st.snow()
 
 os.write(1, f"&&&&&&{new_game}\n".encode()) 
 if st.session_state.status != "playing":
@@ -100,17 +101,20 @@ elif submit:
         st.session_state.history.append(guess_int)
         # I asked GitHub Copilot, it says: "In the current app.py:98-103, 
         # st.session_state.secret is converted to a string on 
-        # every even-numbered attempt:"
+        # every even-numbered attempt: making the hints inaccurate."
         # secret = str(st.session_state.secret)
         # After reading that from GitHub Copilot, I asked whether
         # the if else statement that converts secret to a string upon
         # even attemps should be deleted. It agreed
-        if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
-        #Remove
-        #secret = st.session_state.secret
+        # BUG
+        #if st.session_state.attempts % 2 == 0:
+        #    secret = str(st.session_state.secret)
+        #else:
+        #    secret = st.session_state.secret
+        # BUG
+        
+        # BUG FIX
+        secret = st.session_state.secret
             
 
         outcome, message = check_guess(guess_int, secret)
@@ -142,7 +146,9 @@ elif submit:
 
 with attempts_display.container():
     st.info(
-        f"Guess a number between 1 and 100. "
+        # Another bug. 
+        # f"Guess a number between 1 and 100. "
+        f"Guess a number between {low} and {high}. "
         f"Attempts left: {attempt_limit - st.session_state.attempts}"
     )
 # Must be after submit handler so that it gets the data upon submitted
